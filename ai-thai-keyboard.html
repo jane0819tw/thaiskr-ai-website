@@ -374,7 +374,6 @@
         
         const characterPool = keyboardChars.filter(char => characterData.has(char));
 
-
         // --- 核心功能函數 ---
         
         // 解鎖行動裝置音訊播放限制
@@ -392,19 +391,33 @@
         function speak(text, callback) {
             if (isSpeaking || text.trim() === '') return;
             isSpeaking = true;
+
+            // 禁用鍵盤操作
             keyboardWrapper.classList.add('opacity-50', 'pointer-events-none');
-            const audio = new Audio(`https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=th-TH&client=tw-ob`);
-            audio.play();
-            audio.onended = () => {
+
+            // 建立語音合成物件
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'th-TH'; // 泰語語言碼
+            utterance.rate = 1;       // 語速 (0.1 ~ 10)
+            utterance.pitch = 1;      // 音高 (0 ~ 2)
+            utterance.volume = 1;     // 音量 (0 ~ 1)
+
+            // 播放結束事件
+            utterance.onend = () => {
                 isSpeaking = false;
                 keyboardWrapper.classList.remove('opacity-50', 'pointer-events-none');
                 if (callback) callback();
             };
-            audio.onerror = (e) => {
-                console.error("音訊播放錯誤:", e);
+
+            // 播放錯誤事件
+            utterance.onerror = (e) => {
+                console.error("語音播放錯誤:", e);
                 isSpeaking = false;
                 keyboardWrapper.classList.remove('opacity-50', 'pointer-events-none');
             };
+
+            // 呼叫播放
+            speechSynthesis.speak(utterance);
         }
 
         function updateDisplay(character) {
@@ -462,7 +475,7 @@
             updateInfoDisplay(''); 
             
             setTimeout(() => {
-                speak(testCharacter, () => {
+                speak(`${testCharacter}${characterData.get(testCharacter).example}`, () => {
                     testModeFeedback.textContent = '請選擇正確的字母';
                 });
             }, 500);
@@ -509,6 +522,7 @@
         // --- 事件處理函數 ---
 
         function handleKeyPress(e) {
+            console.log(e);
             const keyButton = e.target.closest('.key');
             if (!keyButton) return;
 
@@ -530,12 +544,12 @@
                     if (wrongAnswerCount >= 3) {
                         answerBtn.classList.remove('hidden');
                     }
-                    speak(testCharacter); 
+                    speak(`${testCharacter}${characterData.get(testCharacter).example}`); 
                 }
             } else {
                 updateDisplay(keyText);
                 updateInfoDisplay(keyText, false);
-                speak(keyText);
+                speak(`${keyText}${characterData.get(keyText)?.example || "" }`);
             }
         }
         
