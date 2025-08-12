@@ -271,30 +271,12 @@
         // ===========================
         //      學習工具資料庫
         // ===========================
-        
-        const learningTools = [
-            {
-                name: "泰語字母閃卡",
-                imageUrl: "https://placehold.co/600x400/43857A/FFFFFF?text=泰語字母閃卡",
-                link: "#" // 請替換成您的應用程式連結
-            },
-            {
-                name: "泰語聲調練習器",
-                imageUrl: "https://placehold.co/600x400/898A4D/FFFFFF?text=泰語聲調練習器",
-                link: "#" // 請替換成您的應用程式連結
-            },
-            {
-                name: "每日泰語單字",
-                imageUrl: "https://placehold.co/600x400/F2834D/FFFFFF?text=每日泰語單字",
-                link: "#" // 請替換成您的應用程式連結
-            }
-        ];
-
+        import { learningTools } from './data/ai-learning-tools.js';
         // ===========================
         //      商品資料庫 (Product Data)
         // ===========================
         // **警告：此處資料已完全根據 supabase_products_final_v2.csv 檔案重新生成**
-        import { products } from './products.js';
+        import { products } from './data/products.js';
         // ===========================
         //      核心 JavaScript 邏輯
         // ===========================
