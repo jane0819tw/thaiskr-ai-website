@@ -216,16 +216,17 @@
             if (apiKey === "YOUR_API_KEY_HERE") {
                 apiKey = ""; // Let the environment handle the key
             }
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-            const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
+            const WORKER_URL = 'https://late-resonance-98ec.jane0819tw.workers.dev';
+            // const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            // const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
             if (schema) {
-                payload.generationConfig = { responseMimeType: "application/json", responseSchema: schema };
+                // payload.generationConfig = { responseMimeType: "application/json", responseSchema: schema };
             }
             try {
-                const response = await fetch(apiUrl, {
+                const response = await fetch(WORKER_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({ message: prompt }),
                 });
                 if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
                 const result = await response.json();
