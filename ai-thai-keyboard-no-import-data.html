@@ -33,6 +33,12 @@
         #keyboard-wrapper {
             transition: opacity 0.2s ease-in-out;
         }
+
+        /* 新增：禁用鍵盤時的樣式 */
+        .keyboard-disabled {
+            opacity: 0.6;
+            pointer-events: none;
+        }
         
         /* 測驗模式回饋的動畫 */
         .feedback-correct {
@@ -48,6 +54,46 @@
         @keyframes flash-red {
             0% { background-color: #EF4444; }
             100% { background-color: transparent; }
+        }
+        /* 滑動開關樣式 */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #f59e0b; /* Amber 500 */
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
         }
     </style>
 </head>
@@ -67,6 +113,10 @@
     <div id="main-container" class="container mx-auto max-w-3xl p-4 flex-col h-screen hidden">
         
         <header class="relative text-center pt-12 pb-2">
+            <a href="#" id="home-btn" class="absolute top-0 left-0 mt-2 ml-2 bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-4 rounded-full transition-all shadow flex items-center gap-2">
+                <i class="fa-solid fa-house"></i>
+                <span>回首頁</span>
+            </a>
             <a href="https://portaly.cc/thaiskr/support" target="_blank" id="sponsor-btn" class="absolute top-0 right-0 mt-2 mr-2 bg-rose-500 hover:bg-rose-600 text-white font-bold py-2 px-4 rounded-full transition-all shadow flex items-center gap-2">
                 <i class="fa-solid fa-mug-hot"></i>
                 <span>贊助</span>
@@ -176,21 +226,29 @@
         <div id="keyboard-wrapper" class="bg-amber-200/80 backdrop-blur-sm p-3 mt-4 rounded-2xl select-none shadow-lg">
             <!-- 控制按鈕區 -->
             <div class="flex justify-between items-center mb-3 gap-2">
+                <div class="flex items-center gap-2">
+                    <span class="text-sm font-bold text-stone-600">5排</span>
+                    <label class="switch">
+                        <input type="checkbox" id="layout-switch">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="text-sm font-bold text-stone-600">4排</span>
+                </div>
                 <select id="font-select" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-full focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
                     <option value="font-sarabun" selected>Sarabun (預設)</option>
                     <option value="font-noto">Noto Sans Thai</option>
                     <option value="font-mitr">Mitr</option>
                     <option value="font-chonburi">Chonburi</option>
                 </select>
-                <button id="test-mode-btn" class="bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white font-bold py-2 px-4 rounded-full transition-all shadow whitespace-nowrap">
+                <button id="test-mode-btn" class="bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white font-bold py-2 px-4 rounded-full transition-all shadow whitespace-nowrap">
                     開始測驗
                 </button>
             </div>
 
-            <!-- 鍵盤容器 -->
-            <div id="keyboard-container">
+            <!-- 5排鍵盤容器 -->
+            <div id="keyboard-5row-container">
                 <!-- 鍵盤頁面 1 -->
-                <div id="keyboard-page-1" class="space-y-2">
+                <div id="keyboard-5row-page-1" class="space-y-2">
                     <div class="flex justify-center space-x-1.5 md:space-x-2">
                         <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ๅ</button>
                         <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">/</button>
@@ -236,7 +294,7 @@
                         <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ฅ</button>
                     </div>
                     <div class="flex justify-center space-x-1.5 md:space-x-2">
-                        <button id="shift-btn-1" class="key h-12 rounded-lg bg-amber-500 text-white text-xl w-14 shadow-sm"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button id="shift-btn-5row-1" class="key h-12 rounded-lg bg-amber-500 text-white text-xl w-14 shadow-sm"><i class="fa-solid fa-arrow-up"></i></button>
                         <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ผ</button>
                         <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ป</button>
                         <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">แ</button>
@@ -247,12 +305,12 @@
                         <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ม</button>
                         <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ใ</button>
                         <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ฝ</button>
-                        <button id="backspace-btn-1" class="key h-12 rounded-lg bg-amber-500 text-white text-xl w-14 shadow-sm"><i class="fa-solid fa-delete-left"></i></button>
+                        <button id="backspace-btn-5row-1" class="key h-12 rounded-lg bg-amber-500 text-white text-xl w-14 shadow-sm"><i class="fa-solid fa-delete-left"></i></button>
                     </div>
                 </div>
 
                 <!-- 鍵盤頁面 2 -->
-                <div id="keyboard-page-2" class="space-y-2 hidden">
+                <div id="keyboard-5row-page-2" class="space-y-2 hidden">
                     <div class="flex justify-center space-x-1.5 md:space-x-2">
                         <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">+</button>
                         <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">๑</button>
@@ -296,7 +354,7 @@
                         <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">.</button>
                     </div>
                      <div class="flex justify-center space-x-1.5 md:space-x-2">
-                        <button id="shift-btn-2" class="key h-12 rounded-lg bg-amber-500 text-white text-xl w-14 shadow-sm"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button id="shift-btn-5row-2" class="key h-12 rounded-lg bg-amber-500 text-white text-xl w-14 shadow-sm"><i class="fa-solid fa-arrow-up"></i></button>
                         <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">(</button>
                         <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">)</button>
                         <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ฉ</button>
@@ -307,7 +365,89 @@
                         <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ฒ</button>
                         <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ฬ</button>
                         <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ฦ</button>
-                        <button id="backspace-btn-2" class="key h-12 rounded-lg bg-amber-500 text-white text-xl w-14 shadow-sm"><i class="fa-solid fa-delete-left"></i></button>
+                        <button id="backspace-btn-5row-2" class="key h-12 rounded-lg bg-amber-500 text-white text-xl w-14 shadow-sm"><i class="fa-solid fa-delete-left"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4排鍵盤容器 (預設隱藏) -->
+            <div id="keyboard-4row-container" class="hidden">
+                 <!-- 鍵盤頁面 1 -->
+                <div id="keyboard-4row-page-1" class="space-y-2">
+                    <div class="flex justify-center space-x-1.5 md:space-x-2">
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ต</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ค</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">พ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ะ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ข</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ว</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ร</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">น</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ย</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ไ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ใ</button>
+                    </div>
+                    <div class="flex justify-center space-x-1.5 md:space-x-2">
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ห</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ก</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ด</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">เ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">จ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">บ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">า</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ล</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ส</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">แ</button>
+                    </div>
+                    <div class="flex justify-center space-x-1.5 md:space-x-2">
+                        <button id="shift-btn-4row-1" class="key h-12 rounded-lg bg-amber-500 text-white text-xl w-16 shadow-sm"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ผ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ป</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">อ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ง</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ช</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ท</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ม</button>
+                        <button id="backspace-btn-4row-1" class="key h-12 rounded-lg bg-amber-500 text-white text-xl w-16 shadow-sm"><i class="fa-solid fa-delete-left"></i></button>
+                    </div>
+                </div>
+                 <!-- 鍵盤頁面 2 -->
+                <div id="keyboard-4row-page-2" class="space-y-2 hidden">
+                    <div class="flex justify-center space-x-1.5 md:space-x-2">
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ถ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ภ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ำ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">โ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ฦ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ฎ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ซ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ณ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ญ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ฯ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">๏</button>
+                    </div>
+                    <div class="flex justify-center space-x-1.5 md:space-x-2">
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ฤ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ฟ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ฆ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ฏ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ฌ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ษ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ศ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ๆ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ฬ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">.</button>
+                    </div>
+                    <div class="flex justify-center space-x-1.5 md:space-x-2">
+                        <button id="shift-btn-4row-2" class="key h-12 rounded-lg bg-amber-500 text-white text-xl w-16 shadow-sm"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ฑ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ธ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ฉ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ฐ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ฮ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ฒ</button>
+                        <button class="key flex-1 h-12 rounded-lg bg-amber-400 text-stone-800 text-xl shadow-sm">ฝ</button>
+                        <button id="backspace-btn-4row-2" class="key h-12 rounded-lg bg-amber-500 text-white text-xl w-16 shadow-sm"><i class="fa-solid fa-delete-left"></i></button>
                     </div>
                 </div>
             </div>
@@ -325,83 +465,83 @@
     document.addEventListener('DOMContentLoaded', function() {
         // --- 資料庫 ---
         const csvData = `類型,子類型,泰文,範例字,音標,中文解釋
-            子音,中子音,ก,ไก่,gor gài,雞
-            子音,中子音,จ,จาน,jor jaan,盤子
-            子音,中子音,อ,อ่าง,or àang,盆
-            子音,中子音,ป,ปลา,bpor bplaa,魚
-            子音,中子音,บ,ใบไม้,bor bai mái,樹葉
-            子音,中子音,ต,เต่า,dtor dtào,烏龜
-            子音,中子音,ด,เด็ก,dor dèk,小朋友
-            子音,中子音,ฏ,ปฏัก,dtor bpà-dtàk,茅槍
-            子音,中子音,ฎ,ชฎา,dor chá-daa,尖頂冠
-            子音,高子音,ผ,ผึ้ง,pŏr pêung,蜜蜂
-            子音,高子音,ฝ,ฝา,fŏr fãa,蓋子
-            子音,高子音,ถ,ถุง,tŏr tũng,袋子
-            子音,高子音,ฐ,ฐาน,tŏr tăan,壇
-            子音,高子音,ห,หีบ,hŏr hèep,箱子
-            子音,高子音,ข,ไข่,kŏr kài,蛋
-            子音,高子音,ฃ,ฃวด,kŏr kùuat,瓶罐
-            子音,高子音,ฉ,ฉิ่ง,chŏr chìng,鈴鐺
-            子音,高子音,ส,เสือ,sŏr sĕuua,老虎
-            子音,高子音,ษ,ฤษี,sŏr réu-sěe,道士
-            子音,高子音,ศ,ศาลา,sŏr săa-laa,涼亭
-            子音,低子音,พ,พาน,por paan,高腳盤
-            子音,低子音,ภ,สำเภา,por săm-pao,帆船
-            子音,低子音,ฟ,ฟัน,for fan,牙齒
-            子音,低子音,ท,ทหาร,tor tá-hăan,軍人
-            子音,低子音,ฑ,มณโฑ,tor mon-too,神話人物
-            子音,低子音,ฒ,ผู้เฒ่า,tor pôo tâo,老人
-            子音,低子音,ธ,ธง,ton tong,旗子
-            子音,低子音,ห,หีบ,hŏr hèep,箱子
-            子音,低子音,ฮ,นกฮูก,hor nók hôok,貓頭鷹
-            子音,低子音,ซ,โซ่,sor sôo,鎖鏈
-            子音,低子音,ฌ,เฌอ,chor cher,樹
-            子音,低子音,ช,ช้าง,chor cháang,大象
-            子音,低子音,ฅ,ฅน,kor kon,人
-            子音,低子音,ฆ,ระฆัง,kor rá-kang,鐘
-            子音,低子音,ค,ควาย,kor kwaai,水牛
-            子音,低子音,ง,งู,ngor ngoo,蛇
-            子音,低子音,ญ,หญิง,yor yĭng,女人
-            子音,低子音,ย,ยักษ์,yor yák,巨人
-            子音,低子音,ณ,เณร,nor nen,沙彌
-            子音,低子音,น,หนู,nor nŏo,老鼠
-            子音,低子音,ม,ม้า,mor máa,馬
-            子音,低子音,ฬ,จุฬา,lor jù-laa,風箏
-            子音,低子音,ล,ลิง,lor ling,猴子
-            子音,低子音,ร,เรือ,ror reuua,船
-            子音,低子音,ว,แหวน,wor wăen,戒指
-            母音,短母音,ะ,,sà-rà à,
-            母音,長母音,า,,sà-rà aa,
-            母音,短母音,ิ,,sà-rà ì,
-            母音,長母音,ี,,sà-rà ii,
-            母音,短母音,ึ,,sà-rà eu,
-            母音,長母音,ื,,sà-rà euu,
-            母音,短母音,ุ,,sà-rà ù,
-            母音,長母音,ู,,sà-rà uu,
-            母音,短母音,เะ,,sà-rà è,
-            母音,長母音,เ,,sà-rà ee,
-            母音,短母音,แะ,,sà-rà àe,
-            母音,長母音,แ,,sà-rà aae,
-            母音,短母音,โะ,,sà-rà ò,
-            母音,長母音,โ,,sà-rà oo,
-            母音,短母音,เาะ,,sà-rà òr,
-            母音,長母音,อ,,sà-rà oor,
-            母音,短母音,เิะ,,sà-rà er,
-            母音,長母音,เิ,,sà-rà eer,
-            母音,短母音,เียะ,,sà-rà ìa,
-            母音,長母音,เีย,,sà-rà iia,
-            母音,短母音,เือะ,,sà-rà eua,
-            母音,長母音,เือ,,sà-rà euua,
-            母音,短母音,ัวะ,,sà-rà ùa,
-            母音,長母音,ัว,,sà-rà uua,
-            母音,特殊母音,ำ,สำ,sà-rà am,
-            母音,特殊母音,ใ,ใอ,sà-rà ai mái múuan,
-            母音,特殊母音,ไ,ไอ,sà-rà ai mái má-laai,
-            母音,特殊母音,เา,เอา,sà-rà ao,
-            母音,特殊母音,ฤ,,reu,
-            母音,特殊母音,ฤๅ,,reuu,
-            母音,特殊母音,ฦ,,leu,
-            母音,特殊母音,ฦๅ,,leuu,`;
+子音,中子音,ก,ไก่,gor gài,雞
+子音,中子音,จ,จาน,jor jaan,盤子
+子音,中子音,อ,อ่าง,or àang,盆
+子音,中子音,ป,ปลา,bpor bplaa,魚
+子音,中子音,บ,ใบไม้,bor bai mái,樹葉
+子音,中子音,ต,เต่า,dtor dtào,烏龜
+子音,中子音,ด,เด็ก,dor dèk,小朋友
+子音,中子音,ฏ,ปฏัก,dtor bpà-dtàk,茅槍
+子音,中子音,ฎ,ชฎา,dor chá-daa,尖頂冠
+子音,高子音,ผ,ผึ้ง,pŏr pêung,蜜蜂
+子音,高子音,ฝ,ฝา,fŏr fãa,蓋子
+子音,高子音,ถ,ถุง,tŏr tũng,袋子
+子音,高子音,ฐ,ฐาน,tŏr tăan,壇
+子音,高子音,ห,หีบ,hŏr hèep,箱子
+子音,高子音,ข,ไข่,kŏr kài,蛋
+子音,高子音,ฃ,ฃวด,kŏr kùuat,瓶罐
+子音,高子音,ฉ,ฉิ่ง,chŏr chìng,鈴鐺
+子音,高子音,ส,เสือ,sŏr sĕuua,老虎
+子音,高子音,ษ,ฤษี,sŏr réu-sěe,道士
+子音,高子音,ศ,ศาลา,sŏr săa-laa,涼亭
+子音,低子音,พ,พาน,por paan,高腳盤
+子音,低子音,ภ,สำเภา,por săm-pao,帆船
+子音,低子音,ฟ,ฟัน,for fan,牙齒
+子音,低子音,ท,ทหาร,tor tá-hăan,軍人
+子音,低子音,ฑ,มณโฑ,tor mon-too,神話人物
+子音,低子音,ฒ,ผู้เฒ่า,tor pôo tâo,老人
+子音,低子音,ธ,ธง,ton tong,旗子
+子音,低子音,ห,หีบ,hŏr hèep,箱子
+子音,低子音,ฮ,นกฮูก,hor nók hôok,貓頭鷹
+子音,低子音,ซ,โซ่,sor sôo,鎖鏈
+子音,低子音,ฌ,เฌอ,chor cher,樹
+子音,低子音,ช,ช้าง,chor cháang,大象
+子音,低子音,ฅ,ฅน,kor kon,人
+子音,低子音,ฆ,ระฆัง,kor rá-kang,鐘
+子音,低子音,ค,ควาย,kor kwaai,水牛
+子音,低子音,ง,งู,ngor ngoo,蛇
+子音,低子音,ญ,หญิง,yor yĭng,女人
+子音,低子音,ย,ยักษ์,yor yák,巨人
+子音,低子音,ณ,เณร,nor nen,沙彌
+子音,低子音,น,หนู,nor nŏo,老鼠
+子音,低子音,ม,ม้า,mor máa,馬
+子音,低子音,ฬ,จุฬา,lor jù-laa,風箏
+子音,低子音,ล,ลิง,lor ling,猴子
+子音,低子音,ร,เรือ,ror reuua,船
+子音,低子音,ว,แหวน,wor wăen,戒指
+母音,短母音,ะ,,sà-rà à,
+母音,長母音,า,,sà-rà aa,
+母音,短母音,ิ,,sà-rà ì,
+母音,長母音,ี,,sà-rà ii,
+母音,短母音,ึ,,sà-rà eu,
+母音,長母音,ื,,sà-rà euu,
+母音,短母音,ุ,,sà-rà ù,
+母音,長母音,ู,,sà-rà uu,
+母音,短母音,เะ,,sà-rà è,
+母音,長母音,เ,,sà-rà ee,
+母音,短母音,แะ,,sà-rà àe,
+母音,長母音,แ,,sà-rà aae,
+母音,短母音,โะ,,sà-rà ò,
+母音,長母音,โ,,sà-rà oo,
+母音,短母音,เาะ,,sà-rà òr,
+母音,短母音,เิะ,,sà-rà er,
+母音,長母音,เิ,,sà-rà eer,
+母音,短母音,เียะ,,sà-rà ìa,
+母音,長母音,เีย,,sà-rà iia,
+母音,短母音,เือะ,,sà-rà eua,
+母音,長母音,เือ,,sà-rà euua,
+母音,短母音,ัวะ,,sà-rà ùa,
+母音,長母音,ัว,,sà-rà uua,
+母音,特殊母音,ำ,สำ,sà-rà am,
+母音,特殊母音,ใ,ใอ,sà-rà ai mái múuan,
+母音,特殊母音,ไ,ไอ,sà-rà ai mái má-laai,
+母音,特殊母音,เา,เอา,sà-rà ao,
+母音,特殊母音,ฤ,,reu,
+母音,特殊母音,ฤๅ,,reuu,
+母音,特殊母音,ฦ,,leu,
+母音,特殊母音,ฦๅ,,leuu,`;
+
 
         const characterData = new Map();
 
@@ -430,6 +570,7 @@
         parseCSV(csvData);
 
         // --- DOM 元素 ---
+        const audioElement = new Audio(); // 建立一個可重複使用的 Audio 元素
         const displays = {
             sarabun: document.getElementById('display-sarabun'),
             noto: document.getElementById('display-noto'),
@@ -456,13 +597,22 @@
         const audioUnlockOverlay = document.getElementById('audio-unlock-overlay');
         const mainContainer = document.getElementById('main-container');
         const keyboardWrapper = document.getElementById('keyboard-wrapper');
-        const keyboardPage1 = document.getElementById('keyboard-page-1');
-        const keyboardPage2 = document.getElementById('keyboard-page-2');
-        const shiftBtn1 = document.getElementById('shift-btn-1');
-        const shiftBtn2 = document.getElementById('shift-btn-2');
-        const backspaceBtn1 = document.getElementById('backspace-btn-1');
-        const backspaceBtn2 = document.getElementById('backspace-btn-2');
+        const keyboard5RowContainer = document.getElementById('keyboard-5row-container');
+        const keyboard4RowContainer = document.getElementById('keyboard-4row-container');
+        const keyboard5RowPage1 = document.getElementById('keyboard-5row-page-1');
+        const keyboard5RowPage2 = document.getElementById('keyboard-5row-page-2');
+        const keyboard4RowPage1 = document.getElementById('keyboard-4row-page-1');
+        const keyboard4RowPage2 = document.getElementById('keyboard-4row-page-2');
+        const shiftBtn5Row1 = document.getElementById('shift-btn-5row-1');
+        const shiftBtn5Row2 = document.getElementById('shift-btn-5row-2');
+        const backspaceBtn5Row1 = document.getElementById('backspace-btn-5row-1');
+        const backspaceBtn5Row2 = document.getElementById('backspace-btn-5row-2');
+        const shiftBtn4Row1 = document.getElementById('shift-btn-4row-1');
+        const shiftBtn4Row2 = document.getElementById('shift-btn-4row-2');
+        const backspaceBtn4Row1 = document.getElementById('backspace-btn-4row-1');
+        const backspaceBtn4Row2 = document.getElementById('backspace-btn-4row-2');
         const fontSelect = document.getElementById('font-select');
+        const layoutSwitch = document.getElementById('layout-switch');
         const testModeBtn = document.getElementById('test-mode-btn');
         const testModeFeedback = document.getElementById('test-mode-feedback');
         const allKeys = document.querySelectorAll('.key');
@@ -473,14 +623,11 @@
         let isTestMode = false;
         let testCharacter = '';
         let wrongAnswerCount = 0;
+        let thaiVoice = null;
         const fontClasses = ['font-sarabun', 'font-noto', 'font-mitr', 'font-chonburi'];
         
-        const keyboardChars = Array.from(allKeys)
-            .filter(key => !key.id.includes('shift') && !key.id.includes('backspace'))
-            .map(key => key.textContent.trim())
-            .filter(text => text.length === 1 && !'/_+()?,.'.includes(text));
-        
-        const characterPool = keyboardChars.filter(char => characterData.has(char));
+        let characterPool = [];
+
 
         // --- 核心功能函數 ---
         
@@ -490,35 +637,48 @@
             mainContainer.classList.add('flex');
         }
 
-
+        // --- 功能更新: 發音時禁用鍵盤 ---
         function speak(text, callback) {
             if (isSpeaking || text.trim() === '') {
-                if(callback) callback();
+                if (callback) callback();
                 return;
-            };
+            }
             isSpeaking = true;
+            keyboardWrapper.classList.add('keyboard-disabled'); // 禁用鍵盤
+            console.log(`[TTS] Requesting audio for: "${text}"`);
 
-            const audio = new Audio(`https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=th-TH&client=tw-ob`);
+            audioElement.src = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=th-TH&client=tw-ob`;
             
-            const playPromise = audio.play();
+            const playPromise = audioElement.play();
 
             if (playPromise !== undefined) {
                 playPromise.catch(error => {
                     console.error("Audio playback failed:", error);
                     isSpeaking = false; 
-                    if(callback) callback();
+                    keyboardWrapper.classList.remove('keyboard-disabled'); // 播放失敗時啟用鍵盤
+                    if (callback) callback();
                 });
             }
 
-            audio.onended = () => {
-                isSpeaking = false; 
+            const onEnded = () => {
+                isSpeaking = false;
+                keyboardWrapper.classList.remove('keyboard-disabled'); // 播放結束時啟用鍵盤
                 if (callback) callback();
+                audioElement.removeEventListener('ended', onEnded);
+                audioElement.removeEventListener('error', onError);
             };
-            audio.onerror = (e) => {
-                console.error("音訊載入或播放錯誤:", e);
-                isSpeaking = false; 
-                if(callback) callback();
+
+            const onError = (e) => {
+                console.error("Audio load or playback error:", e);
+                isSpeaking = false;
+                keyboardWrapper.classList.remove('keyboard-disabled'); // 載入錯誤時啟用鍵盤
+                if (callback) callback();
+                audioElement.removeEventListener('ended', onEnded);
+                audioElement.removeEventListener('error', onError);
             };
+
+            audioElement.addEventListener('ended', onEnded, { once: true });
+            audioElement.addEventListener('error', onError, { once: true });
         }
 
         function updateDisplay(character) {
@@ -555,14 +715,31 @@
             inactiveTab.content.classList.add('hidden');
         }
 
-        function toggleKeyboardPage() {
-            keyboardPage1.classList.toggle('hidden');
-            keyboardPage2.classList.toggle('hidden');
+        function toggleKeyboardPage(layout) {
+            if (layout === '5row') {
+                keyboard5RowPage1.classList.toggle('hidden');
+                keyboard5RowPage2.classList.toggle('hidden');
+            } else {
+                keyboard4RowPage1.classList.toggle('hidden');
+                keyboard4RowPage2.classList.toggle('hidden');
+            }
         }
 
         function changeGlobalFont(e) {
             document.body.classList.remove(...fontClasses);
             document.body.classList.add(e.target.value);
+        }
+        
+        function updateCharacterPool() {
+            const currentKeyboardContainer = layoutSwitch.checked ? keyboard4RowContainer : keyboard5RowContainer;
+            const allKeysInLayout = currentKeyboardContainer.querySelectorAll('.key');
+            
+            const keyboardChars = Array.from(allKeysInLayout)
+                .filter(key => !key.id.includes('shift') && !key.id.includes('backspace'))
+                .map(key => key.textContent.trim())
+                .filter(text => text.length === 1 && !'/_+()?,.'.includes(text));
+            
+            characterPool = keyboardChars.filter(char => characterData.has(char));
         }
 
         // --- 測驗模式相關函數 ---
@@ -570,13 +747,22 @@
         function startNextTestRound() {
             wrongAnswerCount = 0;
             answerBtn.classList.add('hidden');
+            updateCharacterPool(); // 每次開始新一輪都更新題庫
+            if (characterPool.length === 0) {
+                testModeFeedback.textContent = '目前佈局無可用題目！';
+                return;
+            }
             testCharacter = characterPool[Math.floor(Math.random() * characterPool.length)];
+            
+            console.log(`--- NEW TEST ROUND ---`);
+            console.log(`Correct Answer Set To: "${testCharacter}"`);
+
             testModeFeedback.textContent = '請聽...';
             testModeFeedback.classList.remove('feedback-correct', 'feedback-wrong');
             updateInfoDisplay(''); 
             
             setTimeout(() => {
-                speak(`${testCharacter}`, () => {
+                speak(testCharacter, () => {
                     testModeFeedback.textContent = '請選擇正確的字母';
                 });
             }, 500);
@@ -599,21 +785,23 @@
             isTestMode = !isTestMode;
             if (isTestMode) {
                 testModeBtn.textContent = '結束測驗';
-                testModeBtn.classList.replace('bg-indigo-500', 'bg-red-500');
-                testModeBtn.classList.replace('hover:bg-indigo-600', 'hover:bg-red-600');
+                testModeBtn.classList.replace('bg-orange-500', 'bg-red-500');
+                testModeBtn.classList.replace('hover:bg-orange-600', 'hover:bg-red-600');
                 hintBtn.classList.remove('hidden');
                 fontTab.btn.disabled = true; // 禁用字體頁籤
+                layoutSwitch.disabled = true; // 禁用佈局切換
                 updateDisplay('');
                 updateInfoDisplay('');
                 switchTab(infoTab);
                 startNextTestRound();
             } else {
                 testModeBtn.textContent = '開始測驗';
-                testModeBtn.classList.replace('bg-red-500', 'bg-indigo-500');
-                testModeBtn.classList.replace('hover:bg-red-600', 'hover:bg-indigo-600');
+                testModeBtn.classList.replace('bg-red-500', 'bg-orange-500');
+                testModeBtn.classList.replace('hover:bg-red-600', 'hover:bg-orange-600');
                 hintBtn.classList.add('hidden');
                 answerBtn.classList.add('hidden');
                 fontTab.btn.disabled = false; // 啟用字體頁籤
+                layoutSwitch.disabled = false; // 啟用佈局切換
                 testModeFeedback.textContent = "點擊下方 '開始測驗' 進入挑戰！";
                 testModeFeedback.classList.remove('feedback-correct', 'feedback-wrong');
                 testCharacter = '';
@@ -644,12 +832,12 @@
                     if (wrongAnswerCount >= 3) {
                         answerBtn.classList.remove('hidden');
                     }
-                    speak(`${testCharacter}`); 
+                    speak(testCharacter); 
                 }
             } else {
                 updateDisplay(keyText);
                 updateInfoDisplay(keyText, false);
-                speak(`${keyText}`);
+                speak(keyText);
             }
         }
         
@@ -665,17 +853,34 @@
             announcementBar.classList.add('hidden');
         }
 
-        // 綁定音訊解鎖事件
         audioUnlockOverlay.addEventListener('click', unlockAudio);
 
         infoTab.btn.addEventListener('click', () => switchTab(infoTab));
         fontTab.btn.addEventListener('click', () => switchTab(fontTab));
         hintBtn.addEventListener('click', showHint);
         answerBtn.addEventListener('click', showAnswer);
-        shiftBtn1.addEventListener('click', toggleKeyboardPage);
-        shiftBtn2.addEventListener('click', toggleKeyboardPage);
-        backspaceBtn1.addEventListener('click', handleBackspace);
-        backspaceBtn2.addEventListener('click', handleBackspace);
+        
+        shiftBtn5Row1.addEventListener('click', () => toggleKeyboardPage('5row'));
+        shiftBtn5Row2.addEventListener('click', () => toggleKeyboardPage('5row'));
+        backspaceBtn5Row1.addEventListener('click', handleBackspace);
+        backspaceBtn5Row2.addEventListener('click', handleBackspace);
+        
+        shiftBtn4Row1.addEventListener('click', () => toggleKeyboardPage('4row'));
+        shiftBtn4Row2.addEventListener('click', () => toggleKeyboardPage('4row'));
+        backspaceBtn4Row1.addEventListener('click', handleBackspace);
+        backspaceBtn4Row2.addEventListener('click', handleBackspace);
+
+        layoutSwitch.addEventListener('change', (e) => {
+            const is4Row = e.target.checked;
+            if (is4Row) {
+                keyboard5RowContainer.classList.add('hidden');
+                keyboard4RowContainer.classList.remove('hidden');
+            } else {
+                keyboard5RowContainer.classList.remove('hidden');
+                keyboard4RowContainer.classList.add('hidden');
+            }
+        });
+
         fontSelect.addEventListener('change', changeGlobalFont);
         testModeBtn.addEventListener('click', toggleTestMode);
 
@@ -684,7 +889,6 @@
                 key.addEventListener('click', handleKeyPress);
             }
         });
-
     });
     </script>
 
