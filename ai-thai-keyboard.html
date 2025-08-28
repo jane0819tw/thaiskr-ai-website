@@ -14,7 +14,7 @@
         /* 預設字體 */
         body {
             transition: font-family 0.3s ease-in-out;
-            touch-action: manipulation;
+            touch-action: manipulation; /* 改善行動裝置觸控反應 */
         }
 
         /* 四種字體的 class 定義 */
@@ -142,7 +142,7 @@
                 </p>
                 <p class="text-sm">* 若無法發音，請先在裝置 > 語言 > 新增泰語，重新開機後測試。</p>
                 <p class="text-sm">* 若上述方式失敗，使用其他瀏覽器或設備，或前往
-                    <a target="_blank" href="https://g.co/gemini/share/1993b77264e3" 
+                    <a target="_blank" href="https://g.co/gemini/share/e052df48912e" 
                        class="text-blue-600 font-semibold hover:text-blue-800 hover:underline">
                        備用頁面
                     </a>
@@ -569,6 +569,7 @@
                 return;
             };
             isSpeaking = true;
+            keyboardWrapper.classList.add('opacity-50', 'pointer-events-none'); // [修改] 發音時禁用鍵盤
 
             speechSynthesis.cancel(); // 清除先前的佇列
 
@@ -581,12 +582,14 @@
 
             utterance.onend = () => {
                 isSpeaking = false;
+                keyboardWrapper.classList.remove('opacity-50', 'pointer-events-none'); // [修改] 發音結束時啟用鍵盤
                 if (callback) callback();
             };
 
             utterance.onerror = (e) => {
                 console.error("語音播放錯誤:", e);
                 isSpeaking = false;
+                keyboardWrapper.classList.remove('opacity-50', 'pointer-events-none'); // [修改] 發生錯誤時也要啟用鍵盤
                 if(callback) callback();
             };
 
