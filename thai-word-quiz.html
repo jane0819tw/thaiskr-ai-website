@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>泰語拼字盤</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@400;700&family=Noto+Sans+TC:wght@400;700&family=Sarabun:wght@400;700&display=swap');
+
+        :root {
+            --blue: #007bff;
+            --green: #28a745;
+            --red: #dc3545;
+            --light-gray: #f0f2f5;
+            --gray: #6c757d;
+            --white: #fff;
+            --border-color: #dee2e6;
+            --thai-font: 'Sarabun', sans-serif;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', var(--thai-font), sans-serif;
+            background-color: var(--light-gray);
+            margin: 0;
+            padding: 15px;
+        }
+
+        .font-switcher {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 1000;
+            display: flex;
+            gap: 5px;
+        }
+
+        .font-switcher button {
+            padding: 5px 10px;
+            border: 1px solid var(--border-color);
+            background: var(--white);
+            cursor: pointer;
+            border-radius: 5px;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .font-switcher button.active {
+            background-color: var(--blue);
+            color: var(--white);
+        }
+
+        .main-container {
+            display: flex;
+            gap: 15px;
+            max-width: 1200px;
+            margin: auto;
+            height: calc(100vh - 30px);
+        }
+
+        .sidebar {
+            flex: 1;
+            background: var(--white);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow-y: auto;
+        }
+
+        .sidebar h3 {
+            margin-top: 0;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 5px;
+            color: var(--gray);
+            font-size: 1em;
+        }
+
+        .component-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            padding: 0;
+            list-style: none;
+        }
+
+        .component-btn {
+            font-family: var(--thai-font), sans-serif;
+            font-size: 1.2em;
+            padding: 0 15px; /* Let width be auto */
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--white);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .component-btn:hover {
+            background-color: var(--blue);
+            color: var(--white);
+            transform: scale(1.1);
+        }
+
+        #simple-vowels {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        #simple-vowels .component-btn {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        #complex-vowels {
+            flex-wrap: nowrap;
+        }
+
+        .center-panel {
+            flex: 1.5;
+            background: var(--white);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        .question-area h2 {
+            font-size: 1.8em;
+            text-align: center;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #target-word {
+            font-size: 1.5em;
+            color: var(--blue);
+        }
+        #target-meaning {
+            font-size: 1.2em;
+            color: var(--gray);
+        }
+        .speak-icon {
+            cursor: pointer;
+            font-size: 0.8em;
+            margin: 0 10px;
+        }
+        .speak-icon:hover {
+            opacity: 0.7;
+        }
+
+        .constructor-area {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            padding: 30px;
+            background-color: var(--light-gray);
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .slot {
+            width: 80px;
+            height: 80px;
+            border: 2px dashed var(--border-color);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5em;
+            color: var(--gray);
+            position: relative;
+            background-color: var(--white);
+            transition: all 0.3s ease;
+        }
+        .slot-label {
+            position: absolute;
+            top: -25px;
+            font-size: 0.5em;
+            font-weight: bold;
+            color: var(--gray);
+        }
+        .operator {
+            font-size: 2.5em;
+            color: var(--gray);
+        }
+        #result-slot {
+            border-style: solid;
+            color: var(--blue);
+        }
+        .slot-correct {
+            border-color: var(--green);
+            background-color: #e9f7ef;
+        }
+        .slot-incorrect {
+            border-color: var(--red);
+            background-color: #fbe9e7;
+        }
+
+        .feedback-area {
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            height: 40px;
+        }
+
+        .game-controls {
+            text-align: center;
+        }
+        
+        #next-btn, #restart-btn {
+            font-size: 1.2em;
+            padding: 10px 30px;
+            border-radius: 8px;
+            border: none;
+            color: var(--white);
+            background-color: var(--blue);
+            cursor: pointer;
+            display: none;
+        }
+        #restart-btn {
+            background-color: var(--green);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="font-switcher">
+        <button id="font-sarabun-btn">Sarabun</button>
+        <button id="font-mitr-btn">Mitr</button>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar left">
+            <h3>中子音</h3>
+            <ul id="mid-consonants" class="component-list"></ul>
+            <h3>高子音</h3>
+            <ul id="high-consonants" class="component-list"></ul>
+        </div>
+
+        <div class="center-panel">
+            <div class="question-area">
+                <h2>考題: <span id="target-word"></span><span id="speak-word-btn" class="speak-icon">🔊</span> (<span id="target-meaning"></span>)</h2>
+            </div>
+
+            <div class="constructor-area">
+                <div id="consonant-slot" class="slot"><span class="slot-label">子音</span></div>
+                <span class="operator">+</span>
+                <div id="vowel-slot" class="slot"><span class="slot-label">母音</span></div>
+                <span class="operator">+</span>
+                <div id="tone-slot" class="slot"><span class="slot-label">聲調</span></div>
+                <span class="operator">=</span>
+                <div id="result-slot" class="slot"></div>
+            </div>
+
+            <div class="feedback-area" id="feedback"></div>
+
+            <div class="game-controls">
+                <button id="next-btn">下一題</button>
+                <button id="restart-btn">重新開始</button>
+            </div>
+        </div>
+
+        <div class="sidebar right">
+            <h3>單母音</h3>
+            <ul id="simple-vowels" class="component-list"></ul>
+            <h3>複合母音</h3>
+            <ul id="complex-vowels" class="component-list"></ul>
+            <h3>特殊母音</h3>
+            <ul id="special-vowels" class="component-list"></ul>
+            <h3>聲調</h3>
+            <ul id="tone-marks" class="component-list"></ul>
+        </div>
+    </div>
+
+    <script>
+    const midConsonants = ['ก', 'จ', 'ด', 'ต', 'บ', 'ป', 'อ', 'ฎ', 'ฏ'];
+    const highConsonants = ['ข', 'ฉ', 'ฐ', 'ถ', 'ผ', 'ฝ', 'ศ', 'ษ', 'ส', 'ห'];
+    
+    const vowels = [
+        // Simple Vowels
+        { form: 'ะ', display: 'ะ', type: 'simple', template: 'Cะ' },
+        { form: 'า', display: 'า', type: 'simple', template: 'Cา' },
+        { form: 'ิ', display: 'ิ', type: 'simple', template: 'Cิ' },
+        { form: 'ี', display: 'ี', type: 'simple', template: 'Cี' },
+        { form: 'ึ', display: 'ึ', type: 'simple', template: 'Cึ' },
+        { form: 'ื', display: 'ื', type: 'simple', template: 'Cื' },
+        { form: 'ุ', display: 'ุ', type: 'simple', template: 'Cุ' },
+        { form: 'ู', display: 'ู', type: 'simple', template: 'Cู' },
+        { form: 'เ-ะ', display: 'เ-ะ', type: 'simple', template: 'เCะ' },
+        { form: 'เ-', display: 'เ-', type: 'simple', template: 'เC' },
+        { form: 'แ-ะ', display: 'แ-ะ', type: 'simple', template: 'แCะ' },
+        { form: 'แ-', display: 'แ-', type: 'simple', template: 'แC' },
+        { form: 'โ-ะ', display: 'โ-ะ', type: 'simple', template: 'โCะ' },
+        { form: 'โ-', display: 'โ-', type: 'simple', template: 'โC' },
+        { form: 'เ-าะ', display: 'เ-าะ', type: 'simple', template: 'เCาะ' },
+        { form: 'อ', display: 'อ', type: 'simple', template: 'Cอ' },
+        { form: 'เ-อะ', display: 'เ-อะ', type: 'simple', template: 'เCอะ' },
+        { form: 'เ-อ', display: 'เ-อ', type: 'simple', template: 'เCอ' },
+        // Complex Vowels
+        { form: 'เ-ีย', display: 'เ-ีย', type: 'complex', template: 'เCีย' },
+        { form: 'เ-ือ', display: 'เ-ือ', type: 'complex', template: 'เCือ' },
+        { form: 'ัว', display: 'ัว', type: 'complex', template: 'Cัว' },
+        // Special Vowels
+        { form: 'ำ', display: 'ำ', type: 'special', template: 'Cำ' },
+        { form: 'ไ-', display: 'ไ-', type: 'special', template: 'ไC' },
+        { form: 'ใ-', display: 'ใ-', type: 'special', template: 'ใC' },
+        { form: 'เ-า', display: 'เ-า', type: 'special', template: 'เCา' },
+    ];
+
+    const toneMarks = [{display: '無', value: ''}, {display: '่', value: '่'}, {display: '้', value: '้'}, {display: '๊', value: '๊'}, {display: '๋', value: '๋'}];
+
+    const wordBank = [
+        { word: 'จะ', meaning: '將會', consonant: 'จ', vowel: 'ะ', tone: '' },
+        { word: 'ตา', meaning: '眼睛', consonant: 'ต', vowel: 'า', tone: '' },
+        { word: 'ติ', meaning: '批評', consonant: 'ต', vowel: 'ิ', tone: '' },
+        { word: 'ดี', meaning: '好', consonant: 'ด', vowel: 'ี', tone: '' },
+        { word: 'อึ', meaning: '便便', consonant: 'อ', vowel: 'ึ', tone: '' },
+        { word: 'ดื้อ', meaning: '頑皮', consonant: 'ด', vowel: 'ื', tone: '้' },
+        { word: 'จุ', meaning: '容量', consonant: 'จ', vowel: 'ุ', tone: '' },
+        { word: 'ปู่', meaning: '阿公', consonant: 'ป', vowel: 'ู', tone: '่' },
+        { word: 'เตะ', meaning: '踢', consonant: 'ต', vowel: 'เ-ะ', tone: '' },
+        { word: 'เก', meaning: '歪', consonant: 'ก', vowel: 'เ-', tone: '' },
+        { word: 'แกะ', meaning: '羊', consonant: 'ก', vowel: 'แ-ะ', tone: '' },
+        { word: 'แก่', meaning: '老', consonant: 'ก', vowel: 'แ-', tone: '่' },
+        { word: 'โต๊ะ', meaning: '桌子', consonant: 'ต', vowel: 'โ-ะ', tone: '๊' },
+        { word: 'โบ', meaning: '蝴蝶結', consonant: 'บ', vowel: 'โ-', tone: '' },
+        { word: 'เกาะ', meaning: '島', consonant: 'ก', vowel: 'เ-าะ', tone: '่' },
+        { word: 'ต่อ', meaning: '接續', consonant: 'ต', vowel: 'อ', tone: '่' },
+        { word: 'เจอะ', meaning: '遇見', consonant: 'จ', vowel: 'เ-อะ', tone: '' },
+        { word: 'เจอ', meaning: '遇見', consonant: 'จ', vowel: 'เ-อ', tone: '' },
+        { word: 'เสีย', meaning: '壞了', consonant: 'ส', vowel: 'เ-ีย', tone: '' },
+        { word: 'เบื่อ', meaning: '無聊', consonant: 'บ', vowel: 'เ-ือ', tone: '่' },
+        { word: 'หัว', meaning: '頭', consonant: 'ห', vowel: 'ัว', tone: '' },
+        { word: 'จำ', meaning: '記得', consonant: 'จ', vowel: 'ำ', tone: '' },
+        { word: 'ไป', meaning: '去', consonant: 'ป', vowel: 'ไ-', tone: '' },
+        { word: 'ใจ', meaning: '心', consonant: 'จ', vowel: 'ใ-', tone: '' },
+        { word: 'เอา', meaning: '要', consonant: 'อ', vowel: 'เ-า', tone: '' },
+    ];
+
+    let currentWord;
+    let shuffledWordBank;
+    let currentWordIndex = 0;
+    let userSelection = { consonant: null, vowel: null, tone: null };
+
+    const elements = {
+        midConsonants: document.getElementById('mid-consonants'),
+        highConsonants: document.getElementById('high-consonants'),
+        simpleVowels: document.getElementById('simple-vowels'),
+        complexVowels: document.getElementById('complex-vowels'),
+        specialVowels: document.getElementById('special-vowels'),
+        toneMarks: document.getElementById('tone-marks'),
+        targetWord: document.getElementById('target-word'),
+        targetMeaning: document.getElementById('target-meaning'),
+        speakWordBtn: document.getElementById('speak-word-btn'),
+        consonantSlot: document.getElementById('consonant-slot'),
+        vowelSlot: document.getElementById('vowel-slot'),
+        toneSlot: document.getElementById('tone-slot'),
+        resultSlot: document.getElementById('result-slot'),
+        feedback: document.getElementById('feedback'),
+        nextBtn: document.getElementById('next-btn'),
+        restartBtn: document.getElementById('restart-btn'),
+    };
+
+    function speak(text) {
+        if (!'speechSynthesis' in window) {
+            alert('抱歉，您的瀏覽器不支援語音功能。');
+            return;
+        }
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'th-TH';
+        utterance.rate = 0.8;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function createComponentButtons(list, container, type) {
+        list.forEach(item => {
+            const li = document.createElement('li');
+            const btn = document.createElement('button');
+            const displayValue = typeof item === 'object' ? item.display : item;
+            btn.textContent = displayValue;
+            btn.classList.add('component-btn');
+            btn.onclick = () => selectComponent(type, item);
+            li.appendChild(btn);
+            container.appendChild(li);
+        });
+    }
+
+    function selectComponent(type, value) {
+        userSelection[type] = value;
+        const displayValue = typeof value === 'object' ? value.display : value;
+        elements[type + 'Slot'].textContent = displayValue;
+        elements[type + 'Slot'].style.color = '#333';
+
+        if (type === 'consonant' || type === 'vowel') {
+             const textToSpeak = (type === 'consonant') ? value : value.display.replace(/-/g, '');
+             speak(textToSpeak);
+        }
+
+        checkAnswer();
+    }
+
+    function checkAnswer() {
+        const { consonant, vowel, tone } = userSelection;
+        const { consonantSlot, vowelSlot, toneSlot, resultSlot, feedback, nextBtn } = elements;
+
+        feedback.textContent = '';
+        nextBtn.style.display = 'none';
+
+        let allSlotsFilled = true;
+        let allCorrect = true;
+
+        if (consonant) {
+            if (consonant === currentWord.consonant) {
+                consonantSlot.className = 'slot slot-correct';
+            } else {
+                consonantSlot.className = 'slot slot-incorrect';
+                allCorrect = false;
+            }
+        } else {
+            allSlotsFilled = false;
+            allCorrect = false;
+        }
+
+        if (vowel) {
+            if (vowel.form === currentWord.vowel) {
+                vowelSlot.className = 'slot slot-correct';
+            } else {
+                vowelSlot.className = 'slot slot-incorrect';
+                allCorrect = false;
+            }
+        } else {
+            allSlotsFilled = false;
+            allCorrect = false;
+        }
+
+        if (tone) {
+            if (tone.value === currentWord.tone) {
+                toneSlot.className = 'slot slot-correct';
+            } else {
+                toneSlot.className = 'slot slot-incorrect';
+                allCorrect = false;
+            }
+        } else {
+            allSlotsFilled = false;
+            allCorrect = false;
+        }
+        
+        if(allSlotsFilled) {
+            const toneValue = tone.value || '';
+            const consonantWithTone = consonant + toneValue;
+            const constructedWord = vowel.template.replace('C', consonantWithTone);
+            resultSlot.textContent = constructedWord;
+
+            if (allCorrect) {
+                feedback.textContent = '正確！';
+                feedback.style.color = 'var(--green)';
+                nextBtn.style.display = 'inline-block';
+            } else {
+                feedback.textContent = '不對喔，請檢查紅色框框的部分';
+                feedback.style.color = 'var(--red)';
+            }
+        }
+    }
+
+    function loadQuestion() {
+        if (currentWordIndex >= shuffledWordBank.length) {
+            endGame();
+            return;
+        }
+        currentWord = shuffledWordBank[currentWordIndex];
+        
+        elements.targetWord.textContent = currentWord.word;
+        elements.targetMeaning.textContent = currentWord.meaning;
+
+        setTimeout(() => speak(currentWord.word), 100);
+
+        userSelection = { consonant: null, vowel: null, tone: null };
+        ['consonantSlot', 'vowelSlot', 'toneSlot', 'resultSlot'].forEach(slotName => {
+            const slot = elements[slotName];
+            slot.textContent = '';
+            slot.className = 'slot';
+            if(slotName.startsWith('consonant') || slotName.startsWith('vowel') || slotName.startsWith('tone')) {
+                const label = document.createElement('span');
+                label.className = 'slot-label';
+                label.textContent = slotName.replace('Slot','').charAt(0).toUpperCase() + slotName.slice(1).replace('Slot','');
+                if (slotName === 'consonantSlot') label.textContent = '子音';
+                if (slotName === 'vowelSlot') label.textContent = '母音';
+                if (slotName === 'toneSlot') label.textContent = '聲調';
+                slot.appendChild(label);
+            }
+        });
+        elements.feedback.textContent = '';
+        elements.nextBtn.style.display = 'none';
+    }
+    
+    function nextQuestion() {
+        currentWordIndex++;
+        loadQuestion();
+    }
+
+    function startGame() {
+        shuffledWordBank = [...wordBank].sort(() => 0.5 - Math.random());
+        currentWordIndex = 0;
+        elements.restartBtn.style.display = 'none';
+        loadQuestion();
+    }
+    
+    function endGame() {
+        elements.targetWord.textContent = '恭喜！';
+        elements.targetMeaning.textContent = '您已完成所有題目';
+        elements.feedback.textContent = '';
+        elements.nextBtn.style.display = 'none';
+        elements.restartBtn.style.display = 'inline-block';
+    }
+
+    function initialize() {
+        createComponentButtons(midConsonants, elements.midConsonants, 'consonant');
+        createComponentButtons(highConsonants, elements.highConsonants, 'consonant');
+        createComponentButtons(vowels.filter(v => v.type === 'simple'), elements.simpleVowels, 'vowel');
+        createComponentButtons(vowels.filter(v => v.type === 'complex'), elements.complexVowels, 'vowel');
+        createComponentButtons(vowels.filter(v => v.type === 'special'), elements.specialVowels, 'vowel');
+        createComponentButtons(toneMarks, elements.toneMarks, 'tone');
+        
+        elements.nextBtn.addEventListener('click', nextQuestion);
+        elements.restartBtn.addEventListener('click', startGame);
+        elements.speakWordBtn.addEventListener('click', () => {
+            if (currentWord && currentWord.word) {
+                speak(currentWord.word);
+            }
+        });
+
+        const fontSarabunBtn = document.getElementById('font-sarabun-btn');
+        const fontMitrBtn = document.getElementById('font-mitr-btn');
+
+        fontSarabunBtn.addEventListener('click', () => {
+            document.documentElement.style.setProperty('--thai-font', "'Sarabun'");
+            fontSarabunBtn.classList.add('active');
+            fontMitrBtn.classList.remove('active');
+        });
+
+        fontMitrBtn.addEventListener('click', () => {
+            document.documentElement.style.setProperty('--thai-font', "'Mitr'");
+            fontMitrBtn.classList.add('active');
+            fontSarabunBtn.classList.remove('active');
+        });
+
+        fontSarabunBtn.classList.add('active');
+
+        startGame();
+    }
+
+    initialize();
+    </script>
+</body>
+</html>
